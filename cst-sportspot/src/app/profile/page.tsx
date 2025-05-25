@@ -15,6 +15,7 @@ interface Profile {
   email: string;
   phoneNumber: string;
   profileImage: string;
+  updatedAt?: string; // Make this optional to fix TypeScript error
 }
 
 interface BookingStats {
@@ -62,17 +63,27 @@ export default function ProfilePage() {
   // Function to fetch booking statistics
   const fetchBookingStats = async () => {
     try {
+      console.log('Fetching booking statistics...');
       const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-      const response = await fetch('/api/bookings/stats', {
+      
+      // Add cache-busting query parameter to prevent caching
+      const timestamp = new Date().getTime();
+      const response = await fetch(`/api/bookings/stats?t=${timestamp}`, {
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
         }
       });
       
       if (!response.ok) {
         throw new Error('Failed to fetch booking statistics');
       }
+      
       const data = await response.json();
+      console.log('Received booking stats:', data);
+      
       setBookingStats({
         totalBookings: data.totalBookings || 0,
         activeBookings: data.activeBookings || 0
@@ -94,7 +105,32 @@ export default function ProfilePage() {
     // Load initial data
     fetchProfile();
     fetchBookingStats();
+    
+    // Set up interval to refresh booking stats every 30 seconds
+    const statsInterval = setInterval(() => {
+      fetchBookingStats();
+    }, 30000);
+    
+    // Clean up interval on component unmount
+    return () => clearInterval(statsInterval);
   }, [user, router, authLoading]);
+  
+  // Add a visibility change listener to refresh stats when user returns to the page
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && user) {
+        console.log('Page is now visible, refreshing booking stats');
+        fetchBookingStats();
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    // Clean up event listener on component unmount
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [user]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;

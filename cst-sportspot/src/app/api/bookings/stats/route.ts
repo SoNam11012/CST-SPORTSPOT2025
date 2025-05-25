@@ -27,18 +27,22 @@ export async function GET(req: Request) {
     // Connect to database
     await dbConnect();
 
-    // Get user ID from token
-    const userId = payload.id;
+    // Get user ID from token (could be id or email depending on your auth system)
+    const userId = payload.id || payload.email || payload.sub;
+    
+    console.log('Fetching booking stats for user:', userId);
 
     // Get total bookings count for this user
     const totalBookings = await Booking.countDocuments({ userId });
+    console.log('Total bookings found:', totalBookings);
     
-    // Get active bookings count (status = 'confirmed' or 'pending')
+    // Get active bookings count (status = 'Approved' or 'Pending')
     const activeBookings = await Booking.countDocuments({ 
       userId, 
-      status: { $in: ['confirmed', 'pending'] },
+      status: { $in: ['Approved', 'Pending'] },
       date: { $gte: new Date() } // Only count future bookings as active
     });
+    console.log('Active bookings found:', activeBookings);
     
     return NextResponse.json({
       totalBookings,
