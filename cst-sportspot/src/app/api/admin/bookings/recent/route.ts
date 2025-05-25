@@ -60,18 +60,54 @@ export async function GET(req: Request) {
       
       // Get venue data
       let venueData = { id: '', name: 'Unknown Venue', type: '' };
+      
+      // First check if we have a venueName directly in the booking
+      if (bookingObj.venueName) {
+        venueData.name = bookingObj.venueName;
+      }
+      
+      // Then try to get more info from the venue collection
       if (bookingObj.venueId) {
         try {
+          // Try to find venue by ID
           const venue = await Venue.findById(bookingObj.venueId);
           if (venue) {
             venueData = {
               id: venue._id.toString(),
-              name: venue.name,
-              type: venue.type
+              name: venue.name || bookingObj.venueName || 'Unknown Venue',
+              type: venue.type || ''
+            };
+          } else if (bookingObj.venueName) {
+            // If venue not found by ID but we have a name, try to find by name
+            const venueByName = await Venue.findOne({ name: bookingObj.venueName });
+            if (venueByName) {
+              venueData = {
+                id: venueByName._id.toString(),
+                name: venueByName.name,
+                type: venueByName.type || ''
+              };
+            } else {
+              // Just use the name we have
+              venueData = {
+                id: bookingObj.venueId.toString(),
+                name: bookingObj.venueName,
+                type: ''
+              };
+            }
+          } else {
+            // No venue found and no venueName
+            venueData = {
+              id: bookingObj.venueId.toString(),
+              name: 'Unknown Venue',
+              type: ''
             };
           }
         } catch (err) {
           console.error('Error fetching venue data:', err);
+          // Use venueName as fallback if available
+          if (bookingObj.venueName) {
+            venueData.name = bookingObj.venueName;
+          }
         }
       }
       

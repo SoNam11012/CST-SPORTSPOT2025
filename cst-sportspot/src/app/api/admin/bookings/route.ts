@@ -84,21 +84,40 @@ export async function GET(req: Request) {
 
       // Extract venue data using the lookup map
       let venueData = { id: '', name: 'Unknown Venue', type: '' };
+      
+      // First check if we have a venueName directly in the booking
+      if (bookingObj.venueName) {
+        venueData.name = bookingObj.venueName;
+      }
+      
+      // Then try to get more info from the venue collection
       if (bookingObj.venueId) {
         const venueId = bookingObj.venueId.toString();
-        const venueDoc = venueMap.get(venueId);
+        // Try to find venue by ID in our map
+        let venueDoc = venueMap.get(venueId);
+        
+        // If not found by ID, try to find by name
+        if (!venueDoc && bookingObj.venueName) {
+          const venueName = bookingObj.venueName;
+          for (const [_, venue] of venueMap.entries()) {
+            if (venue.name === venueName) {
+              venueDoc = venue;
+              break;
+            }
+          }
+        }
         
         if (venueDoc) {
           venueData = {
             id: venueId,
-            name: venueDoc.name || 'Unknown Venue',
+            name: venueDoc.name || bookingObj.venueName || 'Unknown Venue',
             type: venueDoc.type || ''
           };
         } else {
           // Venue not found in map
           venueData = {
             id: venueId,
-            name: 'Unknown Venue',
+            name: bookingObj.venueName || 'Unknown Venue',
             type: ''
           };
         }

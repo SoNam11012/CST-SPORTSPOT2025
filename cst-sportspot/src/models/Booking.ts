@@ -9,6 +9,8 @@ const bookingSchema = new Schema(
       ref: 'Venue', 
       required: true 
     },
+    // Add venueName field to ensure venue information is always available
+    venueName: { type: String, required: false },
     fullName: { type: String, required: true },
     studentNumber: { type: String, required: true },
     year: { type: String, required: true },
