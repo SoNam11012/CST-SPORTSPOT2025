@@ -1,0 +1,184 @@
+/* FAQ Page Specific Styling */
+:root {
+  --primary: #2c6e49;
+  --secondary: #4c956c;
+  --accent: #ffc971;
+  --light: #f6fff8;
+  --dark: #1b4332;
+}
+
+.faq-page {
+  background-color: var(--light);
+  color: var(--dark);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.faq-page header {
+  background-color: var(--primary);
+  color: white;
+  padding: 4rem 0;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.faq-page header h1 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.faq-page header h1 svg {
+  margin-right: 0.5rem;
+}
+
+.faq-page header p {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.faq-page header:before {
+  content: '';
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  width: 200px;
+  height: 200px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+}
+
+.faq-page header:after {
+  content: '';
+  position: absolute;
+  bottom: -80px;
+  left: -80px;
+  width: 300px;
+  height: 300px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 50%;
+}
+
+/* Search Input Enhancements */
+.search-faq-input {
+  position: relative;
+  padding-right: 50px;
+  transition: all 0.3s ease;
+}
+
+.search-faq-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 0.2rem rgba(44, 110, 73, 0.25);
+}
+
+.search-faq-input-icon {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--primary);
+  pointer-events: none;
+}
+
+.search-faq-input::placeholder {
+  color: #aaa;
+}
+
+.position-relative svg {
+  font-size: 1.2rem;
+}
+
+.category-title {
+  color: var(--primary);
+  font-size: 1.5rem;
+  position: relative;
+  padding-left: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.category-title:before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 25px;
+  background-color: var(--accent);
+  border-radius: 4px;
+}
+
+.accordion-item {
+  border: none;
+  background-color: transparent;
+  margin-bottom: 1rem;
+}
+
+.accordion-button {
+  padding: 1.2rem 1.5rem;
+  background-color: white;
+  color: var(--dark);
+  font-weight: 500;
+  border-radius: 10px !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.accordion-button:not(.collapsed) {
+  background-color: white;
+  color: var(--primary);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.accordion-button:focus {
+  box-shadow: 0 0 0 0.25rem rgba(44, 110, 73, 0.2);
+}
+
+.accordion-button::after {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%232c6e49'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+}
+
+.accordion-body {
+  padding: 1.2rem 1.5rem;
+  background-color: white;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  color: #4a4a4a;
+  line-height: 1.6;
+}
+
+/* No Results State */
+.no-results {
+  background-color: #f8f9fa;
+  border: 2px dashed var(--primary);
+  border-radius: 10px;
+  padding: 2rem;
+  text-align: center;
+  color: var(--dark);
+}
+
+.no-results-icon {
+  font-size: 3rem;
+  color: var(--primary);
+  margin-bottom: 1rem;
+}
+
+.no-results-text {
+  font-size: 1.2rem;
+  opacity: 0.7;
+}
+/* Ensure Bootstrap's collapse classes aren't overridden */
+.accordion-collapse.collapse {
+  display: none;
+  transition: height 0.35s ease;
+  overflow: hidden;
+}
+
+.accordion-collapse.collapse.show {
+  display: block;
+}

@@ -1,0 +1,211 @@
+/* This CSS should be placed in /styles/venue.css */
+
+:root {
+  --primary: #2c6e49;
+  --secondary: #4c956c;
+  --accent: #ffc971;
+  --light: #f6fff8;
+  --dark: #1b4332;
+  --football-color: #4CAF50;
+  --basketball-color: #FF9800;
+  --volleyball-color: #2196F3;
+  --tabletennis-color: #E91E63;
+  --badminton-color: #9C27B0;
+  --tennis-color: #FFEB3B;
+}
+
+body {
+  background-color: var(--light);
+  color: var(--dark);
+  overflow-x: hidden;
+}
+
+.section-title {
+  text-align: center;
+  margin: 4rem 0 2rem;
+  font-size: 2.2rem;
+  color: var(--dark);
+  position: relative;
+}
+.section-title:after {
+  content: '';
+  position: absolute;
+  width: 100px;
+  height: 3px;
+  background-color: var(--accent);
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.sport-card {
+  background-color: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.sport-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+}
+
+.sport-img-container {
+  height: 200px;
+  overflow: hidden;
+}
+.sport-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s;
+}
+.sport-card:hover .sport-img {
+  transform: scale(1.05);
+}
+
+.sport-details {
+  padding: 15px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.sport-icon {
+  font-size: 1.5rem;
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+}
+
+.sport-name {
+  font-size: 1.2rem;
+  text-align: center;
+  color: var(--dark);
+}
+
+.venue-features {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 10px 0;
+}
+
+.venue-feature {
+  font-size: 0.9rem;
+  color: var(--dark);
+  display: flex;
+  align-items: center;
+}
+
+.availability-tooltip {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 5px 10px;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  background-color: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.availability-tooltip.available { color: #28a745; }
+.availability-tooltip.limited { color: #ffc107; }
+.availability-tooltip.unavailable { color: #dc3545; }
+
+.filter-tags {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.filter-tag {
+  background-color: #f0f0f0;
+  color: var(--dark);
+  padding: 8px 15px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  border: none;
+}
+.filter-tag:hover {
+  background-color: var(--secondary);
+  color: white;
+}
+.filter-tag.active {
+  background-color: var(--primary);
+  color: white;
+}
+
+.book-btn {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 10px;
+  transition: background-color 0.3s;
+}
+.book-btn:hover {
+  background-color: var(--dark);
+}
+
+/* Footer styles */
+.footer-logo {
+  color: white;
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+.footer-about {
+  color: #ccc;
+  margin-bottom: 1rem;
+}
+.footer-links {
+  list-style: none;
+  padding-left: 0;
+}
+.footer-links a {
+  color: #ccc;
+  text-decoration: none;
+  display: inline-block;
+  margin-bottom: 0.5rem;
+}
+.footer-links a:hover {
+  color: var(--accent);
+}
+.social-link {
+  width: 40px;
+  height: 40px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s;
+  color: white;
+  text-decoration: none;
+  margin-right: 0.5rem;
+}
+.social-link:hover {
+  background-color: var(--accent);
+  color: var(--dark);
+}
+.btn-accent {
+  background-color: var(--accent);
+  color: var(--dark);
+  border: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+.btn-accent:hover {
+  background-color: var(--secondary);
+  color: white;
+}
