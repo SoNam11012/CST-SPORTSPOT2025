@@ -38,6 +38,7 @@ export default function BookingForm({ venueId, venueName, onClose }: BookingForm
         body: JSON.stringify({
           ...formData,
           venueId,
+          venueName,
           userId: user?.email,
         }),
       });
