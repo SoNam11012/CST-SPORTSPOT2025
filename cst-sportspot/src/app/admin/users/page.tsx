@@ -246,8 +246,19 @@ export default function AdminUsers() {
       </header>
 
       <div className="container mx-auto px-6 py-8">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex items-center mb-6">
+          <button 
+            onClick={() => router.back()}
+            className="mr-4 text-gray-600 hover:text-gray-900 focus:outline-none"
+            aria-label="Go back"
+            title="Go back to previous page"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+          </button>
           <h2 className="text-2xl font-semibold">User Management</h2>
+          <div className="flex-grow"></div>
           <button
             onClick={() => setShowAddModal(true)}
             className="px-4 py-2 bg-[#2c6e49] text-white rounded hover:bg-[#1b4332]"

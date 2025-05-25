@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface Venue {
   id: string;
@@ -20,6 +21,7 @@ interface FormErrors {
 }
 
 export default function AdminVenues() {
+  const router = useRouter();
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
   const [venues, setVenues] = useState<Venue[]>([]);
@@ -514,8 +516,19 @@ export default function AdminVenues() {
       )}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex items-center mb-6">
+          <button 
+            onClick={() => router.back()}
+            className="mr-4 text-gray-600 hover:text-gray-900 focus:outline-none"
+            aria-label="Go back"
+            title="Go back to previous page"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+          </button>
           <h1 className="text-2xl font-bold text-gray-900">Venue Management</h1>
+          <div className="flex-grow"></div>
           <div className="flex space-x-3">
             <button
               onClick={forceAddAllVenues}
