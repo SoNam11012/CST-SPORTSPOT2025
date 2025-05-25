@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 
-export default function SocialCallbackPage() {
+// Component that uses the search params hook wrapped in its own component
+function SocialCallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { login } = useAuth();
@@ -49,5 +50,29 @@ export default function SocialCallbackPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Loading fallback component
+function LoadingFallback() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md text-center">
+        <h1 className="text-2xl font-bold mb-4">Loading</h1>
+        <p className="text-gray-600 mb-4">Please wait...</p>
+        <div className="flex justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2c6e49]"></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Main page component with Suspense boundary
+export default function SocialCallbackPage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <SocialCallbackContent />
+    </Suspense>
   );
 }
