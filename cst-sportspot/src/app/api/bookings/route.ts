@@ -169,7 +169,7 @@ export async function POST(request: NextRequest) {
         ...body,
         venueId: body.venueId || 'default-venue', // Ensure we have a venueId
         venueName: venueName, // Always include venue name
-        status: 'confirmed'
+        status: 'Pending' // Use a valid enum value from the Booking model
       });
       
       console.log('Successfully created booking with ID:', newBooking._id);
@@ -200,7 +200,7 @@ export async function POST(request: NextRequest) {
           year: body.year || '1',
           course: body.course || 'Unknown',
           participants: body.participants || 1,
-          status: 'confirmed'
+          status: 'Pending' // Use a valid enum value from the Booking model
         });
         
         console.log('Created fallback booking with ID:', fallbackBooking._id);
