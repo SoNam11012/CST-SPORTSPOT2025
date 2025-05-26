@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
@@ -76,12 +76,45 @@ export default function HomePage() {
     }
   ];
 
+  // Auto-rotate testimonials
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveTestimonial((prev) => (prev + 1) % testimonials.length);
     }, 5000); // Change testimonial every 5 seconds
 
     return () => clearInterval(interval);
+  }, [testimonials.length]);
+  
+  // Pause auto-rotation when user hovers over testimonials
+  const testimonialRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    const element = testimonialRef.current;
+    let intervalId: NodeJS.Timeout;
+    
+    const startInterval = () => {
+      intervalId = setInterval(() => {
+        setActiveTestimonial((prev) => (prev + 1) % testimonials.length);
+      }, 5000);
+    };
+    
+    const stopInterval = () => {
+      clearInterval(intervalId);
+    };
+    
+    if (element) {
+      element.addEventListener('mouseenter', stopInterval);
+      element.addEventListener('mouseleave', startInterval);
+      startInterval();
+    }
+    
+    return () => {
+      if (element) {
+        element.removeEventListener('mouseenter', stopInterval);
+        element.removeEventListener('mouseleave', startInterval);
+      }
+      clearInterval(intervalId);
+    };
   }, [testimonials.length]);
 
   return (
@@ -463,30 +496,59 @@ export default function HomePage() {
       <section className="py-16 bg-gray-100">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center text-[#1b4332] mb-8">What Our Users Say</h2>
-          <div className="relative max-w-4xl mx-auto">
-            <div className="testimonial-container">
+          <div className="relative max-w-4xl mx-auto overflow-hidden">
+            <div 
+              className="testimonial-slider flex transition-transform duration-500 ease-in-out"
+              style={{ transform: `translateX(-${activeTestimonial * 100}%)` }}
+            >
               {testimonials.map((testimonial, index) => (
                 <div
                   key={index}
-                  className={`testimonial-card ${index === activeTestimonial ? 'active' : ''}`}
+                  className="testimonial-card min-w-full px-4"
                 >
-                  <img 
-                    src={testimonial.img} 
-                    alt={testimonial.name}
-                    className="w-20 h-20 rounded-full mx-auto mb-4 object-cover"
-                  />
-                  <h4 className="font-bold text-lg text-center text-[#1b4332]">{testimonial.name}</h4>
-                  <p className="text-sm text-center text-gray-600 italic">{testimonial.sport}</p>
-                  <p className="mt-4 text-center text-gray-700">"{testimonial.quote}"</p>
+                  <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-all">
+                    <img 
+                      src={testimonial.img} 
+                      alt={testimonial.name}
+                      className="w-20 h-20 rounded-full mx-auto mb-4 object-cover border-4 border-[#2c6e49]"
+                    />
+                    <h4 className="font-bold text-lg text-center text-[#1b4332]">{testimonial.name}</h4>
+                    <p className="text-sm text-center text-gray-600 italic">{testimonial.sport}</p>
+                    <p className="mt-4 text-center text-gray-700 leading-relaxed">"{testimonial.quote}"</p>
+                  </div>
                 </div>
               ))}
             </div>
-            <div className="testimonial-dots">
+            
+            {/* Navigation Arrows */}
+            <button 
+              onClick={() => setActiveTestimonial(prev => (prev === 0 ? testimonials.length - 1 : prev - 1))}
+              className="absolute left-0 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-[#2c6e49] p-2 rounded-full shadow-md z-10 transition-all"
+              aria-label="Previous testimonial"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            
+            <button 
+              onClick={() => setActiveTestimonial(prev => (prev === testimonials.length - 1 ? 0 : prev + 1))}
+              className="absolute right-0 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-[#2c6e49] p-2 rounded-full shadow-md z-10 transition-all"
+              aria-label="Next testimonial"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+            
+            {/* Dots Indicator */}
+            <div className="testimonial-dots flex justify-center mt-6 space-x-2">
               {testimonials.map((_, index) => (
                 <button
                   key={index}
-                  className={`dot ${index === activeTestimonial ? 'active' : ''}`}
+                  className={`w-3 h-3 rounded-full transition-all ${index === activeTestimonial ? 'bg-[#2c6e49] w-6' : 'bg-gray-300 hover:bg-gray-400'}`}
                   onClick={() => setActiveTestimonial(index)}
+                  aria-label={`Go to testimonial ${index + 1}`}
                 />
               ))}
             </div>
@@ -514,28 +576,40 @@ export default function HomePage() {
     <div>
               <h3 className="text-xl font-bold mb-4 flex items-center">
                 <i className="fas fa-basketball-ball mr-2"></i>
-                SportSpot
+                CST-SportSpot
               </h3>
               <p className="mb-6">
                 SportSpot is your one-stop solution for booking sports venues. We connect you with the best indoor and outdoor venues for all your sports needs.
               </p>
-              <div className="flex space-x-4">
-                {[
-                  { icon: 'facebook-f', href: '#' },
-                  { icon: 'twitter', href: '#' },
-                  { icon: 'instagram', href: '#' },
-                  { icon: 'linkedin-in', href: '#' }
-                ].map((social, index) => (
-                  <a
-                    key={index}
-                    href={social.href}
-                    className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-[#ffc971] hover:text-[#1b4332] transition-colors"
-                  >
-                    <i className={`fab fa-${social.icon}`}></i>
-          </a>
-        ))}
-      </div>
-    </div>
+
+              <div className="flex flex-wrap gap-3 mt-2">
+                <img 
+                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Facebook_Logo_%282019%29.png/1024px-Facebook_Logo_%282019%29.png" 
+                  alt="Facebook Logo" 
+                  className="h-7 w-auto object-contain rounded hover:opacity-80 transition-opacity"
+                />
+                <img 
+                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Logo_of_Twitter.svg/512px-Logo_of_Twitter.svg.png" 
+                  alt="Twitter Logo" 
+                  className="h-7 w-auto object-contain rounded hover:opacity-80 transition-opacity"
+                />
+                <img 
+                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Instagram_logo_2016.svg/132px-Instagram_logo_2016.svg.png" 
+                  alt="Instagram Logo" 
+                  className="h-7 w-auto object-contain rounded hover:opacity-80 transition-opacity"
+                />
+                <img 
+                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/LinkedIn_logo_initials.png/640px-LinkedIn_logo_initials.png" 
+                  alt="LinkedIn Logo" 
+                  className="h-7 w-auto object-contain rounded hover:opacity-80 transition-opacity"
+                />
+                <img 
+                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/YouTube_social_white_square_%282017%29.svg/2048px-YouTube_social_white_square_%282017%29.svg.png" 
+                  alt="YouTube Logo" 
+                  className="h-7 w-auto object-contain rounded hover:opacity-80 transition-opacity"
+                />
+              </div>
+            </div>
 
     <div>
               <h4 className="text-lg font-semibold mb-4">Quick Links</h4>

@@ -5,7 +5,9 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import BookingForm from '@/components/BookingForm';
 import Navbar from '@/components/Navbar';
+import VenueAvailabilityChecker from '@/components/VenueAvailabilityChecker';
 import { useAuth } from '@/hooks/useAuth';
+import { FaArrowLeft } from 'react-icons/fa';
 
 interface Venue {
   _id: string;
@@ -15,6 +17,7 @@ interface Venue {
   image: string;
   status: string;
   description: string;
+  equipment?: string[];
 }
 
 export default function VenuePage() {
@@ -122,6 +125,14 @@ export default function VenuePage() {
       <Navbar />
 
       <div className="container mx-auto px-4 py-8">
+        <button
+          onClick={() => router.back()}
+          className="flex items-center text-gray-600 hover:text-[#2c6e49] transition-colors mb-4"
+        >
+          <FaArrowLeft className="mr-2" />
+          <span>Back to Venues</span>
+        </button>
+
         <div className="bg-white rounded-xl shadow-md overflow-hidden">
           <div className="relative h-96">
             <img
@@ -137,30 +148,66 @@ export default function VenuePage() {
           <div className="p-6">
             <h1 className="text-3xl font-bold text-gray-800 mb-4">{venue.name}</h1>
             
+            {/* Enhanced Description Section */}
+            <div className="bg-[#f0f9f1] p-4 rounded-lg border border-[#d8f3dc] mb-6">
+              <h2 className="text-xl font-semibold text-[#2c6e49] mb-3">About This Venue</h2>
+              <p className="text-gray-700 leading-relaxed">{venue.description || 'This is a premium sports venue available for booking. Check availability and book your slot today!'}</p>
+            </div>
+            
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              <div>
-                <h2 className="text-xl font-semibold text-gray-800 mb-2">Details</h2>
-                <div className="space-y-2">
-                  <p className="flex items-center text-gray-600">
-                    <i className="fas fa-users mr-2 text-[#2c6e49]"></i>
-                    Capacity: {venue.capacity} people
+              <div className="bg-white p-4 rounded-lg shadow-sm">
+                <h2 className="text-xl font-semibold text-gray-800 mb-3 border-b pb-2">Venue Details</h2>
+                <div className="space-y-3">
+                  <p className="flex items-center text-gray-700">
+                    <i className="fas fa-users mr-3 text-[#2c6e49] w-5 text-center"></i>
+                    <span className="font-medium mr-2">Capacity:</span> {venue.capacity} people
                   </p>
-                  <p className="flex items-center text-gray-600">
-                    <i className="fas fa-running mr-2 text-[#2c6e49]"></i>
-                    Type: {venue.type}
+                  <p className="flex items-center text-gray-700">
+                    <i className="fas fa-running mr-3 text-[#2c6e49] w-5 text-center"></i>
+                    <span className="font-medium mr-2">Type:</span> {venue.type}
                   </p>
-                  <p className="flex items-center text-gray-600">
-                    <i className="fas fa-info-circle mr-2 text-[#2c6e49]"></i>
-                    Status: {venue.status}
+                  <p className="flex items-center text-gray-700">
+                    <i className="fas fa-info-circle mr-3 text-[#2c6e49] w-5 text-center"></i>
+                    <span className="font-medium mr-2">Status:</span> 
+                    <span className={`px-2 py-1 rounded text-sm ${venue.status === 'Available' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                      {venue.status}
+                    </span>
                   </p>
                 </div>
               </div>
 
-              <div>
-                <h2 className="text-xl font-semibold text-gray-800 mb-2">Description</h2>
-                <p className="text-gray-600">{venue.description}</p>
+              <div className="bg-white p-4 rounded-lg shadow-sm">
+                <h2 className="text-xl font-semibold text-gray-800 mb-3 border-b pb-2">Facilities & Equipment</h2>
+                <div className="space-y-2">
+                  {venue.equipment && venue.equipment.length > 0 ? (
+                    <ul className="list-disc pl-5 space-y-1">
+                      {venue.equipment.map((item: string, index: number) => (
+                        <li key={index} className="text-gray-700">{item}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-gray-600 italic">Standard equipment is provided with this venue.</p>
+                  )}
+                </div>
               </div>
             </div>
+
+            {/* Venue Availability Calendar */}
+            {venue.status === 'Available' && (
+              <div id="availability" className="mt-6 mb-8">
+                <VenueAvailabilityChecker 
+                  venueId={venue._id} 
+                  onTimeSlotSelect={(date, startTime, endTime, isAvailable) => {
+                    if (isAvailable && user) {
+                      setShowBookingForm(true);
+                    } else if (!user) {
+                      router.push('/login?redirect=' + encodeURIComponent(`/venues/${params.id}`));
+                    }
+                  }}
+                  onBookNow={handleBookNow}
+                />
+              </div>
+            )}
 
             <div className="flex justify-center">
               <button

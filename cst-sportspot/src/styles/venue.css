@@ -143,6 +143,30 @@ body {
   color: white;
 }
 
+.venue-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+  width: 100%;
+}
+
+.check-availability-btn {
+  background-color: var(--accent);
+  color: var(--dark);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+  text-align: center;
+}
+
+.check-availability-btn:hover {
+  background-color: #ffbb50;
+}
+
 .book-btn {
   background-color: var(--primary);
   color: white;
@@ -151,9 +175,9 @@ body {
   border-radius: 5px;
   cursor: pointer;
   font-weight: bold;
-  margin-top: 10px;
   transition: background-color 0.3s;
 }
+
 .book-btn:hover {
   background-color: var(--dark);
 }
