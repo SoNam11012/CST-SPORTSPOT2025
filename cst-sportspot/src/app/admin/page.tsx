@@ -31,8 +31,7 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState({
     totalUsers: 0,
     activeBookings: 0,
-    totalVenues: 0,
-    pendingRequests: 0
+    totalVenues: 0
   });
   const [recentBookings, setRecentBookings] = useState<Booking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -84,8 +83,7 @@ export default function AdminDashboard() {
         let statsData = {
           totalUsers: 0,
           activeBookings: 0,
-          totalVenues: 0,
-          pendingRequests: 0
+          totalVenues: 0
         };
         
         if (statsResponse.ok) {
@@ -95,8 +93,7 @@ export default function AdminDashboard() {
             statsData = {
               totalUsers: data.totalUsers || 0,
               activeBookings: data.activeBookings || 0,
-              totalVenues: data.totalVenues || 0,
-              pendingRequests: data.pendingRequests || 0
+              totalVenues: data.totalVenues || 0
             };
           } catch (e) {
             console.error('Error parsing stats data:', e);
@@ -106,7 +103,11 @@ export default function AdminDashboard() {
         }
         
         // Always update stats even if there was an error
-        setStats(statsData);
+        setStats({
+          totalUsers: statsData.totalUsers,
+          activeBookings: statsData.activeBookings,
+          totalVenues: statsData.totalVenues
+        });
         
         // Process recent bookings
         let bookingsData: Booking[] = [];
@@ -247,52 +248,42 @@ export default function AdminDashboard() {
       </header>
 
       <div className="container mx-auto px-6 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          {/* Total Users */}
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="flex items-center">
-              <div className="p-3 bg-green-100 rounded-full">
-                <FaUsers className="text-green-600 text-xl" />
+              <div className="p-3 rounded-full bg-green-100 text-green-500 mr-4">
+                <FaUsers className="text-xl" />
               </div>
-              <div className="ml-4">
-                <h2 className="text-gray-600 text-sm">Total Users</h2>
+              <div>
+                <h3 className="text-gray-500 text-sm">Total Users</h3>
                 <p className="text-2xl font-semibold">{stats.totalUsers}</p>
               </div>
             </div>
           </div>
 
+          {/* Active Bookings */}
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="flex items-center">
-              <div className="p-3 bg-blue-100 rounded-full">
-                <FaCalendarAlt className="text-blue-600 text-xl" />
+              <div className="p-3 rounded-full bg-blue-100 text-blue-500 mr-4">
+                <FaCalendarAlt className="text-xl" />
               </div>
-              <div className="ml-4">
-                <h2 className="text-gray-600 text-sm">Active Bookings</h2>
+              <div>
+                <h3 className="text-gray-500 text-sm">Total Bookings</h3>
                 <p className="text-2xl font-semibold">{stats.activeBookings}</p>
               </div>
             </div>
           </div>
 
+          {/* Total Venues */}
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="flex items-center">
-              <div className="p-3 bg-yellow-100 rounded-full">
-                <FaBuilding className="text-yellow-600 text-xl" />
+              <div className="p-3 rounded-full bg-yellow-100 text-yellow-500 mr-4">
+                <FaBuilding className="text-xl" />
               </div>
-              <div className="ml-4">
-                <h2 className="text-gray-600 text-sm">Total Venues</h2>
+              <div>
+                <h3 className="text-gray-500 text-sm">Total Venues</h3>
                 <p className="text-2xl font-semibold">{stats.totalVenues}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <div className="flex items-center">
-              <div className="p-3 bg-red-100 rounded-full">
-                <FaChartBar className="text-red-600 text-xl" />
-              </div>
-              <div className="ml-4">
-                <h2 className="text-gray-600 text-sm">Pending Requests</h2>
-                <p className="text-2xl font-semibold">{stats.pendingRequests}</p>
               </div>
             </div>
           </div>

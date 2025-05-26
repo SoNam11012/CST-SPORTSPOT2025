@@ -33,18 +33,22 @@ export async function GET(req: Request) {
     const totalUsers = await User.countDocuments();
     const totalVenues = await Venue.countDocuments();
     
-    // Get active bookings (status = 'confirmed')
-    const activeBookings = await Booking.countDocuments({ status: 'confirmed' });
+    // Get approved bookings
+    const approvedBookings = await Booking.countDocuments({ status: 'Approved' });
     
-    // Get pending requests (status = 'pending')
-    const pendingRequests = await Booking.countDocuments({ status: 'pending' });
+    // Get pending bookings
+    const pendingBookings = await Booking.countDocuments({ status: 'Pending' });
+    
+    // Total active bookings (both pending and approved)
+    const activeBookings = approvedBookings + pendingBookings;
+    
+    console.log('Stats data:', { totalUsers, activeBookings, totalVenues, approvedBookings, pendingBookings });
     
     // Return real stats from database
     return NextResponse.json({
       totalUsers,
       activeBookings,
-      totalVenues,
-      pendingRequests
+      totalVenues
     });
   } catch (error) {
     console.error('Error fetching admin stats:', error);
