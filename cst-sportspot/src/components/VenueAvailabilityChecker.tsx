@@ -90,13 +90,19 @@ export default function VenueAvailabilityChecker({ venueId, onTimeSlotSelect, on
       setError('');
       try {
         const formattedDate = format(selectedDate, 'yyyy-MM-dd');
-        const response = await fetch(`/api/venues/${venueId}/calendar-availability?date=${formattedDate}`);
+        const response = await fetch(`/api/venues/${venueId}/calendar-availability?date=${formattedDate}`, {
+          headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+          }
+        });
         
         if (!response.ok) {
           throw new Error('Failed to fetch availability data');
         }
         
         const data = await response.json();
+        console.log('Availability data:', data); // Debug log
         const bookedSlotsData = data.bookedSlots || [];
         setBookedSlots(bookedSlotsData);
         
@@ -114,6 +120,7 @@ export default function VenueAvailabilityChecker({ venueId, onTimeSlotSelect, on
           })));
         }
       } catch (err: any) {
+        console.error('Error fetching availability:', err);
         setError(err.message || 'Failed to load availability data');
         setTimeSlots([]);
       } finally {
@@ -122,6 +129,14 @@ export default function VenueAvailabilityChecker({ venueId, onTimeSlotSelect, on
     };
 
     fetchAvailability();
+    
+    // Set up an interval to refresh the data every 30 seconds
+    const intervalId = setInterval(() => {
+      fetchAvailability();
+    }, 30000);
+    
+    // Clean up the interval when the component unmounts or when the date changes
+    return () => clearInterval(intervalId);
   }, [selectedDate, venueId]);
 
   const handlePreviousMonth = () => {
@@ -174,8 +189,11 @@ export default function VenueAvailabilityChecker({ venueId, onTimeSlotSelect, on
 
   // Check if a date has any bookings
   const hasBookings = (date: Date) => {
-    if (!selectedDate || !isSameDay(date, selectedDate)) return false;
-    return bookedSlots.length > 0;
+    if (!selectedDate || !bookedSlots || bookedSlots.length === 0) return false;
+    
+    // For the current implementation, we're checking if the selected date has bookings
+    // and showing an indicator for that date
+    return isSameDay(date, selectedDate) && bookedSlots.length > 0;
   };
 
   return (

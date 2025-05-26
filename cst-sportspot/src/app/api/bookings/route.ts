@@ -165,11 +165,52 @@ export async function POST(request: NextRequest) {
         endTime: body.endTime
       });
       
+      // Check for double bookings before creating the booking
+      const availability = await checkAvailability({
+        venueId: body.venueId || 'default-venue',
+        date: body.date,
+        startTime: body.startTime,
+        endTime: body.endTime
+      });
+      
+      // If the time slot is already booked, return an error
+      if (!availability.isAvailable) {
+        console.log('Time slot already booked:', availability.conflictingBookings);
+        return NextResponse.json(
+          { error: 'This time slot is already booked. Please select a different time.' },
+          { status: 409 } // Conflict status code
+        );
+      }
+      
+      // Fetch venue details to ensure we have complete information
+      let venueDetails = null;
+      try {
+        if (body.venueId) {
+          venueDetails = await Venue.findById(body.venueId).lean();
+          console.log('Found venue details:', venueDetails ? 'yes' : 'no');
+        }
+      } catch (venueError) {
+        console.error('Error fetching venue details:', venueError);
+      }
+      
+      // Create booking with consistent venue information
       const newBooking = await Booking.create({
         ...body,
         venueId: body.venueId || 'default-venue', // Ensure we have a venueId
         venueName: venueName, // Always include venue name
-        status: 'Pending' // Use a valid enum value from the Booking model
+        // Store venue as an object with complete information
+        venue: venueDetails ? {
+          id: venueDetails._id.toString(),
+          name: venueDetails.name,
+          type: venueDetails.type || 'Unknown',
+          location: venueDetails.location || 'Unknown'
+        } : {
+          id: body.venueId || 'default-venue',
+          name: venueName,
+          type: 'Unknown',
+          location: 'Unknown'
+        },
+        status: 'Approved' // Set status directly to Approved instead of Pending
       });
       
       console.log('Successfully created booking with ID:', newBooking._id);
@@ -200,7 +241,7 @@ export async function POST(request: NextRequest) {
           year: body.year || '1',
           course: body.course || 'Unknown',
           participants: body.participants || 1,
-          status: 'Pending' // Use a valid enum value from the Booking model
+          status: 'Approved' // Set status directly to Approved instead of Pending
         });
         
         console.log('Created fallback booking with ID:', fallbackBooking._id);
@@ -234,9 +275,9 @@ async function checkAvailability(booking: Partial<BookingType>): Promise<Booking
   const venueObjectId = new Types.ObjectId(booking.venueId);
 
   const conflicts = await Booking.find({
-    venueId: venueObjectId,
+    venueId: booking.venueId,
     date: booking.date,
-    status: 'confirmed',
+    status: { $in: ['Approved', 'Pending'] },
     $or: [
       {
         startTime: { $lte: booking.startTime },

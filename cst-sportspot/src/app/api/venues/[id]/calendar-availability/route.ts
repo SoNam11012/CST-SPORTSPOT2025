@@ -36,14 +36,29 @@ export async function GET(
     const dayEnd = endOfDay(targetDate);
 
     // Find all bookings for this venue on the specified date
+    // Convert the string ID to match how it might be stored
+    const possibleVenueIds = [params.id, params.id.toString()];
+    
+    console.log('Searching for bookings with venue IDs:', possibleVenueIds);
+    console.log('Date range:', { dayStart, dayEnd });
+    
     const bookings = await Booking.find({
-      venueId: params.id,
+      $or: [
+        { venueId: { $in: possibleVenueIds } },
+        { 'venue.id': { $in: possibleVenueIds } },
+        { 'venue._id': { $in: possibleVenueIds } }
+      ],
       status: { $in: ['Pending', 'Approved'] },
       date: {
         $gte: dayStart,
         $lte: dayEnd
       }
     }).sort({ startTime: 1 });
+    
+    console.log(`Found ${bookings.length} bookings for venue ${params.id} on ${date}`);
+    if (bookings.length > 0) {
+      console.log('Sample booking:', JSON.stringify(bookings[0], null, 2));
+    }
 
     // Extract booked time slots with more details
     const bookedSlots = bookings.map(booking => ({
